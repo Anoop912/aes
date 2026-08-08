@@ -63,7 +63,10 @@ RUN chmod -R 775 /var/www/html/storage \
     /var/www/html/bootstrap/cache
 
 # Render provides the PORT environment variable
+COPY start.sh /usr/local/bin/start.sh
+
+RUN chmod +x /usr/local/bin/start.sh
+
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/start.sh"]
