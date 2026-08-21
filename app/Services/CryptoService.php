@@ -89,6 +89,72 @@ class CryptoService
 
     /*
     |--------------------------------------------------------------------------
+    | AES-256-CBC
+    |--------------------------------------------------------------------------
+    */
+
+    public function encryptAes256CBC(string $plainText, string $key): string
+    {
+        if (strlen($key) !== 32) {
+            throw new Exception('Key must be exactly 32 bytes.');
+        }
+
+        $ivLength = openssl_cipher_iv_length('aes-256-cbc');
+        $iv = random_bytes($ivLength);
+
+        $cipherText = openssl_encrypt(
+            $plainText,
+            'aes-256-cbc',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv
+        );
+
+        if ($cipherText === false) {
+            throw new Exception('Encryption failed.');
+        }
+
+        return base64_encode($iv) . '.' . base64_encode($cipherText);
+    }
+
+    public function decryptAes256CBC(string $payload, string $key): string
+    {
+        if (strlen($key) !== 32) {
+            throw new Exception('Key must be exactly 32 bytes.');
+        }
+
+        $parts = explode('.', $payload);
+
+        if (count($parts) !== 2) {
+            throw new Exception('Invalid payload format.');
+        }
+
+        [$ivBase64, $cipherBase64] = $parts;
+
+        $iv = base64_decode($ivBase64, true);
+        $cipherText = base64_decode($cipherBase64, true);
+
+        if ($iv === false || $cipherText === false) {
+            throw new Exception('Invalid payload.');
+        }
+
+        $decrypted = openssl_decrypt(
+            $cipherText,
+            'aes-256-cbc',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv
+        );
+
+        if ($decrypted === false) {
+            throw new Exception('Decryption failed: ' . openssl_error_string());
+        }
+
+        return $decrypted;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | AES-256-GCM + RSA
     |--------------------------------------------------------------------------
     */
@@ -172,14 +238,14 @@ class CryptoService
 
         $privKey = openssl_pkey_get_private($privateKey);
 
-if (!$privKey) {
+        if (!$privKey) {
 
-    while ($error = openssl_error_string()) {
-        dump($error);
-    }
+            while ($error = openssl_error_string()) {
+                dump($error);
+            }
 
-    throw new Exception('Unable to load private key.');
-}
+            throw new Exception('Unable to load private key.');
+        }
 
         if (!openssl_private_decrypt(
             $encryptedKey,

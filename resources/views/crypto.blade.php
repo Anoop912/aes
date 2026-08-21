@@ -63,6 +63,28 @@
                 <li class="nav-item">
                     <button
                         class="nav-link"
+                        id="encrypt-cbc-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#encrypt-cbc"
+                        type="button">
+                        AES-CBC Encrypt
+                    </button>
+                </li>
+
+                <li class="nav-item">
+                    <button
+                        class="nav-link"
+                        id="decrypt-cbc-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#decrypt-cbc"
+                        type="button">
+                        AES-CBC Decrypt
+                    </button>
+                </li>
+
+                <li class="nav-item">
+                    <button
+                        class="nav-link"
                         id="encrypt-rsa-tab"
                         data-bs-toggle="tab"
                         data-bs-target="#encrypt-rsa"
@@ -205,6 +227,127 @@
                     @endif
 
                 </div>
+
+                {{-- AES-CBC Encrypt --}}
+
+                <div class="tab-pane fade"
+                     id="encrypt-cbc">
+
+                    <form method="POST"
+                          action="/encrypt-cbc">
+
+                        @csrf
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Plain Text
+                            </label>
+
+                            <textarea
+                                class="form-control"
+                                rows="6"
+                                name="plain_text">{{ old('plain_text') }}</textarea>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                AES Key (32 Bytes)
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="key"
+                                value="{{ old('key') }}">
+
+                        </div>
+
+                        <button class="btn btn-success">
+                            Encrypt (CBC)
+                        </button>
+
+                    </form>
+
+                    @if(session('encrypted_cbc'))
+
+                        <hr>
+
+                        <h5>
+                            Encrypted Result
+                        </h5>
+
+                        <textarea
+                            class="form-control"
+                            rows="8"
+                            readonly>{{ session('encrypted_cbc') }}</textarea>
+
+                    @endif
+
+                </div>
+
+                {{-- AES-CBC Decrypt --}}
+
+                <div class="tab-pane fade"
+                     id="decrypt-cbc">
+
+                    <form method="POST"
+                          action="/decrypt-cbc">
+
+                        @csrf
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Encrypted Payload
+                            </label>
+
+                            <textarea
+                                class="form-control"
+                                rows="6"
+                                name="encrypted_text">{{ old('encrypted_text') }}</textarea>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                AES Key (32 Bytes)
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="key"
+                                value="{{ old('key') }}">
+
+                        </div>
+
+                        <button class="btn btn-danger">
+                            Decrypt (CBC)
+                        </button>
+
+                    </form>
+
+                    @if(session('decrypted_cbc'))
+
+                        <hr>
+
+                        <h5>
+                            Decrypted Result
+                        </h5>
+
+                        <textarea
+                            class="form-control"
+                            rows="8"
+                            readonly>{{ session('decrypted_cbc') }}</textarea>
+
+                    @endif
+
+                </div>
+
                 {{-- AES + RSA Encrypt --}}
 
                 <div class="tab-pane fade"

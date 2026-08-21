@@ -15,3 +15,6 @@ Route::post('/decrypt', [CryptoController::class, 'decrypt']);
 
 Route::post('/encrypt-rsa', [CryptoController::class, 'encryptRsa']);
 Route::post('/decrypt-rsa', [CryptoController::class, 'decryptRsa']);
+
+Route::post('/encrypt-cbc', [CryptoController::class, 'encryptCbc']);
+Route::post('/decrypt-cbc', [CryptoController::class, 'decryptCbc']);

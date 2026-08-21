@@ -85,6 +85,70 @@ class CryptoController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | AES-256-CBC
+    |--------------------------------------------------------------------------
+    */
+
+    public function encryptCbc(Request $request)
+    {
+        $request->validate([
+            'plain_text' => ['required'],
+            'key' => ['required', 'size:32'],
+        ]);
+
+        try {
+
+            $encrypted = $this->crypto->encryptAes256CBC(
+                $request->plain_text,
+                $request->key
+            );
+
+            return back()->with([
+                'encrypted_cbc' => $encrypted,
+                'active_tab' => 'encrypt-cbc'
+            ]);
+
+        } catch (\Throwable $e) {
+
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'encrypt_cbc' => $e->getMessage()
+                ]);
+        }
+    }
+
+    public function decryptCbc(Request $request)
+    {
+        $request->validate([
+            'encrypted_text' => ['required'],
+            'key' => ['required', 'size:32'],
+        ]);
+
+        try {
+
+            $decrypted = $this->crypto->decryptAes256CBC(
+                $request->encrypted_text,
+                $request->key
+            );
+
+            return back()->with([
+                'decrypted_cbc' => $decrypted,
+                'active_tab' => 'decrypt-cbc'
+            ]);
+
+        } catch (\Throwable $e) {
+
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'decrypt_cbc' => $e->getMessage()
+                ]);
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | AES-256-GCM + RSA
     |--------------------------------------------------------------------------
     */
